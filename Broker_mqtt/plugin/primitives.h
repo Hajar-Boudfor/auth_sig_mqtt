@@ -10,10 +10,10 @@
 #include <stddef.h>
 
 /* HKDF-SHA256 — clé de session du schéma SIG
- * IKM  = pms            (32 bytes, secret ML-KEM encapsulé contre pk_kem)
- * salt = r_c || r_b     (64 bytes)
+ * IKM  = pms            
+ * salt = r_c || r_b     
  * info = "SIG-MQTT-v1"
- * Sortie : session_key (32 bytes)
+ * Sortie : session_key
  * Retourne 1 si succès, 0 sinon
  */
 int derive_session_key_sig(
