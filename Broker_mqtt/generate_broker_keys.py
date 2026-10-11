@@ -4,8 +4,8 @@ generate_broker_keys.py — Phase 0 (hors ligne) du schéma SIG-MQTT
 Génère UNE SEULE FOIS la paire de clés statique ML-DSA-44 du broker
 (FIPS 204) et l'écrit en binaire brut :
 
-  broker_pk_s.bin  (1312 bytes)  
-  broker_sk_s.bin  (2560 bytes)
+  broker_pk_s.bin   
+  broker_sk_s.bin  
 
 Usage (depuis Broker_mqtt/) :
   python3 generate_broker_keys.py            
