@@ -1,7 +1,7 @@
 """
 Client_mqtt_sig.py — IoT device with ML-DSA-44 post-quantum authentication
-==========================================================================
-Thèse — Hajar Boudfor — FST Rabat, 2025-2026
+
+Thèse — Hajar Boudfor — FST Rabat
 Superviseur : Pr. El Souidi
 Référence   : Samandari & Gritti (2023), DOI:10.3390/jcp3030021
 
@@ -21,9 +21,7 @@ Handshake SIG-MQTT5 (Enhanced Authentication) :
 Phase 0 : le client ne connaît que ca.crt (keys/ca.crt), l'ancre de confiance.
 Il vérifie cert avec la clé de la CA, puis en extrait pk_s pour vérifier sigma_s.
 
-Note technique : paho-mqtt 2.1.0 ne gère pas le paquet AUTH (0xF0).
-La classe PQCClient ci-dessous ajoute la réception et l'envoi de AUTH,
-sans modifier la bibliothèque paho.
+
 """
 
 import os
@@ -48,7 +46,7 @@ from Primitives.Primitives import (
 )
 from Primitives.Certificate import load_ca, verify_broker_certificate
 
-# ── Tailles (FIPS 203 / FIPS 204) ─────────────────────────────
+
 NONCE_SIZE  = 32     # r_c, r_b
 SIG_SIZE    = 2420   # sigma_s   (ML-DSA-44)
 PK_S_SIZE   = 1312   # pk_s      (ML-DSA-44)
@@ -59,7 +57,7 @@ HMAC_SIZE   = 32     # tau_c, tau_b
 BROKER_HELLO_MIN_SIZE = NONCE_SIZE + SIG_SIZE + PK_KEM_SIZE          # 3252 + cert
 CERT_MAX_SIZE = 8192        # même limite que CERT_MAX_LEN dans le plugin
 
-# ── Configuration ─────────────────────────────────────────────
+#  Configuration 
 BROKER_HOST = "localhost"
 BROKER_PORT = 1884          # conteneur mosquitto-sig
 AUTH_METHOD = "SIG"
@@ -79,9 +77,8 @@ session = {
 }
 
 
-# ─────────────────────────────────────────────────────────────
 # Client paho avec support du paquet AUTH
-# ─────────────────────────────────────────────────────────────
+
 class PQCClient(mqtt.Client):
     """paho-mqtt Client + réception/envoi du paquet AUTH (0xF0)."""
 
@@ -116,9 +113,9 @@ class PQCClient(mqtt.Client):
         return self._packet_queue(AUTH_PACKET, bytes(packet), 0, 0)
 
 
-# ─────────────────────────────────────────────────────────────
+
 # PHASE 3 — AUTH reçu : BROKER_HELLO → CLIENT_FINISHED
-# ─────────────────────────────────────────────────────────────
+
 def on_auth(client, userdata, reason_code, properties):
     print(f"\n[on_auth] AUTH reçu — reason_code={reason_code}")
     try:
@@ -181,9 +178,9 @@ def on_auth(client, userdata, reason_code, properties):
         client.disconnect()
 
 
-# ─────────────────────────────────────────────────────────────
+
 # CONNACK reçu : vérification de tau_b (confirmation de clé)
-# ─────────────────────────────────────────────────────────────
+
 def on_connect(client, userdata, flags, reason_code, properties):
     print(f"\n[on_connect] reason_code = {reason_code}")
     if reason_code != 0:
@@ -214,9 +211,9 @@ def on_message(client, userdata, msg):
     print(f"[MESSAGE] topic={msg.topic} | payload={msg.payload.decode()}")
 
 
-# ─────────────────────────────────────────────────────────────
+
 # Ancre de confiance : certificat de la CA, connu à l'avance (Phase 0)
-# ─────────────────────────────────────────────────────────────
+
 try:
     CA_CERT, PK_CA = load_ca(CA_CERT_PATH)
 except (OSError, ValueError) as e:
@@ -224,9 +221,9 @@ except (OSError, ValueError) as e:
 
 
 if __name__ == "__main__":
-    # ─────────────────────────────────────────────────────────
+
     # PHASE 1 — CLIENT_HELLO
-    # ─────────────────────────────────────────────────────────
+
     session["r_c"] = random_nonce(NONCE_SIZE)
 
     print("=" * 55)
