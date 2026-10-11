@@ -24,16 +24,16 @@
  * Le plugin les charge au démarrage, il ne les régénère jamais.
  *
  * Options mosquitto.conf :
- *   plugin_opt_sk_path  chemin de broker_sk_s.bin  (2560 B)
- *   plugin_opt_pk_path  chemin de broker_pk_s.bin  (1312 B)
- *   plugin_opt_cert_path chemin de broker_cert.der  (taille variable, ~4005 B)
+ *   plugin_opt_sk_path  chemin de broker_sk_s.bin  
+ *   plugin_opt_pk_path  chemin de broker_pk_s.bin  
+ *   plugin_opt_cert_path chemin de broker_cert.der  
  *
  * Compile avec :
  *   gcc -I<mosquitto>/include -fPIC -shared Plugin_Mosquitto_sig.c primitives.c \
  *       -o auth_sig.so -loqs -lssl -lcrypto
  */
 
-#define _GNU_SOURCE          /* pour memmem() */
+#define _GNU_SOURCE          
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -50,25 +50,24 @@
 
 MOSQUITTO_PLUGIN_DECLARE_VERSION(5);
 
-/* ── Paramètres ─────────────────────────────────────────────── */
+/* Paramètre*/
 #define AUTH_METHOD        "SIG"
 #define DEFAULT_SK_PATH    "/mosquitto/keys/broker_sk_s.bin"
 #define DEFAULT_PK_PATH    "/mosquitto/keys/broker_pk_s.bin"
 #define DEFAULT_CERT_PATH  "/mosquitto/keys/broker_cert.der"
 
 #define NONCE_LEN   32
-#define PK_S_LEN    OQS_SIG_ml_dsa_44_length_public_key      /* 1312 */
-#define SK_S_LEN    OQS_SIG_ml_dsa_44_length_secret_key      /* 2560 */
-#define SIG_LEN     OQS_SIG_ml_dsa_44_length_signature       /* 2420 */
-#define PK_KEM_LEN  OQS_KEM_ml_kem_512_length_public_key     /* 800  */
-#define SK_KEM_LEN  OQS_KEM_ml_kem_512_length_secret_key     /* 1632 */
-#define CT_LEN      OQS_KEM_ml_kem_512_length_ciphertext     /* 768  */
-#define SS_LEN      OQS_KEM_ml_kem_512_length_shared_secret  /* 32   */
+#define PK_S_LEN    OQS_SIG_ml_dsa_44_length_public_key       
+#define SK_S_LEN    OQS_SIG_ml_dsa_44_length_secret_key     
+#define SIG_LEN     OQS_SIG_ml_dsa_44_length_signature       
+#define PK_KEM_LEN  OQS_KEM_ml_kem_512_length_public_key     
+#define SK_KEM_LEN  OQS_KEM_ml_kem_512_length_secret_key  
+#define CT_LEN      OQS_KEM_ml_kem_512_length_ciphertext     
+#define SS_LEN      OQS_KEM_ml_kem_512_length_shared_secret
 #define HMAC_LEN    32
 
-#define CERT_MAX_LEN        8192                                           /* limite de sécurité */
-#define CLIENT_FINISHED_LEN (CT_LEN + HMAC_LEN)                            /* 800  */
-
+#define CERT_MAX_LEN        8192                                           
+#define CLIENT_FINISHED_LEN (CT_LEN + HMAC_LEN)                             
 /* Labels HMAC : identiques à Primitives.py (24 octets, sans '\0') */
 #define LABEL_CLIENT_FINISHED "SIG-MQTT client finished"
 #define LABEL_BROKER_FINISHED "SIG-MQTT broker finished"
@@ -77,14 +76,12 @@ MOSQUITTO_PLUGIN_DECLARE_VERSION(5);
 /* Transcript HMAC = label || r_c || r_b || pk_kem || sigma_s || ct */
 #define HMAC_DATA_LEN (LABEL_LEN + 2 * NONCE_LEN + PK_KEM_LEN + SIG_LEN + CT_LEN)  /* 4076 */
 
-/* ── État du handshake entre la phase 2 et la phase 4 ─────────
- * Une seule session : un seul client se connecte à la fois
- * (même choix que le plugin KEM). */
+/* État du handshake entre la phase 2 et la phase 4 */
 typedef struct {
     uint8_t r_c[NONCE_LEN];
     uint8_t r_b[NONCE_LEN];
     uint8_t pk_kem[PK_KEM_LEN];
-    uint8_t sk_kem[SK_KEM_LEN];       /* éphémère : effacée après décapsulation */
+    uint8_t sk_kem[SK_KEM_LEN];       
     uint8_t sigma_s[SIG_LEN];
 } sig_session_t;
 
@@ -98,9 +95,7 @@ static size_t   g_cert_len = 0;        /* taille réelle du certificat */
 static sig_session_t g_session;
 
 
-/* ─────────────────────────────────────────────────────────────
- * Lecture d'un fichier de clé de taille exacte
- * ───────────────────────────────────────────────────────────── */
+/* Lecture d'un fichier de clé de taille exact */
 static int load_key_file(const char *path, uint8_t *buf, size_t len)
 {
     FILE *f = fopen(path, "rb");
