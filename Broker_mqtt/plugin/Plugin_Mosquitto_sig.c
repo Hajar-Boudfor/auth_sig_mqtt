@@ -117,10 +117,7 @@ static int load_key_file(const char *path, uint8_t *buf, size_t len)
 }
 
 
-/* ─────────────────────────────────────────────────────────────
- * Lecture d'un fichier de taille variable (certificat DER)
- * Lit au plus max_len octets ; la taille lue est écrite dans *out_len
- * ───────────────────────────────────────────────────────────── */
+
 static int load_cert_file(const char *path, uint8_t *buf, size_t max_len, size_t *out_len)
 {
     FILE *f = fopen(path, "rb");
@@ -143,9 +140,7 @@ static int load_cert_file(const char *path, uint8_t *buf, size_t max_len, size_t
 }
 
 
-/* ─────────────────────────────────────────────────────────────
- * PHASE 2 — CONNECT reçu : CLIENT_HELLO → BROKER_HELLO
- * ───────────────────────────────────────────────────────────── */
+/*  PHASE 2 — CONNECT reçu : CLIENT_HELLO → BROKER_HELLO*/
 static int sig_auth_start(int event, void *event_data, void *userdata)
 {
     struct mosquitto_evt_extended_auth *ed = event_data;
@@ -215,9 +210,7 @@ fail:
 }
 
 
-/* ─────────────────────────────────────────────────────────────
- * PHASE 4 — AUTH reçu : CLIENT_FINISHED → CONNACK (tau_b)
- * ───────────────────────────────────────────────────────────── */
+/* PHASE 4 — AUTH reçu : CLIENT_FINISHED → CONNACK (tau_b) */
 static int sig_auth_continue(int event, void *event_data, void *userdata)
 {
     struct mosquitto_evt_extended_auth *ed = event_data;
@@ -301,9 +294,7 @@ done:
 }
 
 
-/* ─────────────────────────────────────────────────────────────
- * Initialisation : chargement de (pk_s, sk_s) et du certificat (Phase 0)
- * ───────────────────────────────────────────────────────────── */
+/*  Initialisation : chargement de (pk_s, sk_s) et du certificat (Phase 0) */
 int mosquitto_plugin_init(mosquitto_plugin_id_t *identifier, void **user_data,
                           struct mosquitto_opt *opts, int opt_count)
 {
